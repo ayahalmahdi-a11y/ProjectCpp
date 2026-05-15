@@ -46,8 +46,11 @@ void solvebestcombination(float T_required, float speed_required)
     for (int i = 0; i < motorCount; i++) {
         for (int j = 0; j < gearCount; j++) {
 
-            float T_output = motors[i].torque * gears[j].ratio * gears[j].efficiency;
-            float speed_output = motors[i].speed / gears[j].ratio;
+            float T_output = (motors[i].torque / 1000.0f)* gears[j].ratio * gears[j].efficiency;
+                                              // mNm ---> Nm
+                                              
+            float speed_output = (motors[i].speed / gears[j].ratio) * (2.0f*M_PI/60.0F);
+                                                                      //RPM ---> rad/s
 
             // Check conditions
 

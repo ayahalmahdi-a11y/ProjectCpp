@@ -80,7 +80,7 @@ float T_required;
 
     float speed_required;
 
-    cout << "Enter required speed: ";
+    cout << "Enter required speed (rad/s): ";
     cin >> speed_required;
 
     solvebestcombination(T_required, speed_required);
