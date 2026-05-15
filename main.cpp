@@ -1,129 +1,94 @@
 #include <iostream>
 #include <vector>
 #include <cfloat>
+#include <limits>
 #include "Header.h"
 using namespace std;
 
 extern vector<Material> materials;
 
-// Main
+// ── Input helpers ─────────────────────────────────────────────────────────────
+
+// Read a validated integer in [minVal, maxVal]
+int getInt(const string& prompt, int minVal, int maxVal) {
+    int val;
+    while (true) {
+        cout << prompt;
+        if (cin >> val && val >= minVal && val <= maxVal)
+            return val;
+        cout << "Invalid input. Please enter a whole number between "
+             << minVal << " and " << maxVal << ".\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+// Read a validated double strictly greater than minVal
+double getDouble(const string& prompt, double minVal = 0.0) {
+    double val;
+    while (true) {
+        cout << prompt;
+        if (cin >> val && val > minVal)
+            return val;
+        cout << "Invalid input. Please enter a number greater than "
+             << minVal << ".\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 int main() {
 
-//part1
-        // Shape selection
-    int shape;
-    while(true)
-    {
-        cout << "Choose cross-section:\n1 - Rectangle\n2 - Circle\n";
-        cin >> shape;
-        if(shape==1||shape==2)break;
-        cout<<"invalid choice!\n";
+    // ── PART 1 ────────────────────────────────────────────────────────────────
 
-    }   // Material selection
+    cout << "Choose cross-section:\n1 - Rectangle\n2 - Circle\n";
+    int shape = getInt("Enter choice: ", 1, 2);
+
     cout << "\nAvailable materials:\n";
-    for (int i = 0; i < materials.size(); i++) {
-        cout << i << " - " << materials[i].name << endl;
-    }
+    for (int i = 0; i < (int)materials.size(); i++)
+        cout << i << " - " << materials[i].name << "\n";
 
-    int matChoice;
-    while(true)
-    {
-        cout << "Select material: ";
-        cin >> matChoice;
-        if(matChoice>=0 && matChoice < materials.size())
-            break;
-        cout<<"invalid material choice!\n";
-    }
+    int matChoice = getInt("Select material: ", 0, (int)materials.size() - 1);
     Material selected = materials[matChoice];
 
-        // Link parameters
-    double L, mp, amax;
-    do
-    {
-        cout << "\nEnter link length (L) in meters: ";
-        cin >> L; 
-        if (L <= 0) 
-           cout << "Invalid! Enter a positive number.\n";
-    } while (L <= 0);
-        
-    do
-    {
-        cout << "Enter payload mass (mp) in Kg: ";
-        cin >> mp;
-       if (mp <= 0)
-           cout << "Invalid! Enter a positive number.\n";
-    } while (mp <= 0);
+    double L    = getDouble("\nEnter link length (L) in meters: ");
+    double mp   = getDouble("Enter payload mass (mp) in kg: ");
+    double amax = getDouble("Enter max acceleration (amax) in Rad/s^2: ");
 
-    do
-    {
-        cout << "Enter max acceleration (amax) Rad/s^2: ";
-        cin >> amax;
-        if (amax <= 0)
-            cout << "Invalid! Enter a positive number.\n";
-    } while (amax <= 0);
-    
-      
-    double finalMass = 0;
+    double finalMass = 0.0;
 
     if (shape == 1) {
-        double b, h;
-        do
-        {
-             cout << "\nEnter width (b) in meters: ";
-            cin >> b;
-            if (b <= 0)
-                cout << "Invalid! Enter a positive number.\n";
-        } while (b <= 0);
-        
-        do
-        {
-            cout << "Enter height (h) in meters: ";
-            cin >> h;
-            if (h <= 0)
-                cout << "Invalid! Enter a positive number.\n";
-        } while (h <= 0);
+        double b = getDouble("\nEnter initial width (b) in meters: ");
+        double h = getDouble("Enter initial height (h) in meters: ");
 
         optRectangle(b, h, selected.density, mp, L, amax, selected.yieldStrength, finalMass);
 
         cout << "\nFinal: b = " << b << " m, h = " << h << " m\n";
     }
-    else if (shape == 2) {
-        double r;
-        do
-        {
-            cout << "\nEnter radius (r) in meters: ";
-            cin >> r;
-            if (r <= 0)
-                cout << "Invalid! Enter a positive number.\n";
-        } while (r <= 0);
-        
-        optCircle(r, selected.density, mp, L, amax,
-                  selected.yieldStrength, finalMass);
+    else {
+        double r = getDouble("\nEnter initial radius (r) in meters: ");
+
+        optCircle(r, selected.density, mp, L, amax, selected.yieldStrength, finalMass);
 
         cout << "\nFinal: r = " << r << " m\n";
     }
 
     cout << "\nFinal Link Mass = " << finalMass << " kg\n";
 
+    // ── PART 2 ────────────────────────────────────────────────────────────────
 
-//PART2
+    double T_required = (finalMass * 9.81 * (L / 2.0))
+                      + (mp       * 9.81 *  L)
+                      + (finalMass * (L / 2.0) * (L / 2.0) * amax)
+                      + (mp        *  L         *  L        * amax);
 
-float T_required;
-      T_required=(finalMass*9.81*(L/2))+(mp*9.81*L)+(finalMass*(L/2)*(L/2)*amax)+(mp*L*L*amax);
-    cout << "\nRequired Torque =" << T_required << "Nm\n";
+    cout << "\nRequired Torque = " << T_required << " Nm\n";
 
-    float speed_required;
+    double speed_required = getDouble("Enter required output speed (RPM): ");
 
-    do
-    {
-      cout << "Enter required speed (rad/s): ";
-      cin >> speed_required; 
-      if (speed_required <= 0) 
-          cout << "Invalid! Enter a positive number.\n";
-    } while (speed_required <= 0);
-    
-    solvebestcombination(T_required, speed_required);
+    solvebestcombination((float)T_required, (float)speed_required);
 
     return 0;
 }
