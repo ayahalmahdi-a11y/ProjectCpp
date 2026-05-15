@@ -2,6 +2,7 @@
 #include <cfloat>
 #include <cmath>
 #include "Header.h"
+using namespace std;
 
 //Using float lliterals in arrays for memory optimization
 
