@@ -18,7 +18,7 @@ int main() {
         cout << "Choose cross-section:\n1 - Rectangle\n2 - Circle\n";
         cin >> shape;
         if(shape==1||shape==2)break;
-        cout<<"invalid choice\n";
+        cout<<"invalid choice!\n";
 
     }
     cout << "\nAvailable materials:\n";
@@ -33,26 +33,55 @@ int main() {
         cin >> matChoice;
         if(matChoice>=0 && matChoice < materials.size())
             break;
-        cout<<"invalid material choice\n";
+        cout<<"invalid material choice!\n";
     }
     Material selected = materials[matChoice];
 
     double L, mp, amax;
-    cout << "\nEnter link length (L) in meters: ";
-    cin >> L;
-    cout << "Enter payload mass (mp) in Kg: ";
-    cin >> mp;
-    cout << "Enter max acceleration (amax) Rad/s^2: ";
-    cin >> amax;
+    do
+    {
+        cout << "\nEnter link length (L) in meters: ";
+        cin >> L; 
+        if (L <= 0) 
+           cout << "Invalid! Enter a positive number.\n";
+    } while (L <= 0);
+        
+    do
+    {
+        cout << "Enter payload mass (mp) in Kg: ";
+        cin >> mp;
+       if (mp <= 0)
+           cout << "Invalid! Enter a positive number.\n";
+    } while (mp <= 0);
 
+    do
+    {
+        cout << "Enter max acceleration (amax) Rad/s^2: ";
+        cin >> amax;
+        if (amax <= 0)
+            cout << "Invalid! Enter a positive number.\n";
+    } while (amax <= 0);
+    
+      
     double finalMass = 0;
 
     if (shape == 1) {
         double b, h;
-        cout << "\nEnter width (b) in meters: ";
-        cin >> b;
-        cout << "Enter height (h) in meters: ";
-        cin >> h;
+        do
+        {
+             cout << "\nEnter width (b) in meters: ";
+            cin >> b;
+            if (b <= 0)
+                cout << "Invalid! Enter a positive number.\n";
+        } while (b <= 0);
+        
+        do
+        {
+            cout << "Enter height (h) in meters: ";
+            cin >> h;
+            if (h <= 0)
+                cout << "Invalid! Enter a positive number.\n";
+        } while (h <= 0);
 
         optRectangle(b, h, selected.density, mp, L, amax, selected.yieldStrength, finalMass);
 
@@ -60,9 +89,14 @@ int main() {
     }
     else if (shape == 2) {
         double r;
-        cout << "\nEnter radius (r) in meters: ";
-        cin >> r;
-
+        do
+        {
+            cout << "\nEnter radius (r) in meters: ";
+            cin >> r;
+            if (r <= 0)
+                cout << "Invalid! Enter a positive number.\n";
+        } while (r <= 0);
+        
         optCircle(r, selected.density, mp, L, amax,
                   selected.yieldStrength, finalMass);
 
@@ -80,9 +114,14 @@ float T_required;
 
     float speed_required;
 
-    cout << "Enter required speed (rad/s): ";
-    cin >> speed_required;
-
+    do
+    {
+      cout << "Enter required speed (rad/s): ";
+      cin >> speed_required; 
+      if (speed_required <= 0) 
+          cout << "Invalid! Enter a positive number.\n";
+    } while (speed_required <= 0);
+    
     solvebestcombination(T_required, speed_required);
 
     return 0;
