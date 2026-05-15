@@ -6,12 +6,12 @@ using namespace std;
 
 extern vector<Material> materials;
 
-
+// Main
 
 int main() {
 
 //part1
-
+        // Shape selection
     int shape;
     while(true)
     {
@@ -20,7 +20,7 @@ int main() {
         if(shape==1||shape==2)break;
         cout<<"invalid choice!\n";
 
-    }
+    }   // Material selection
     cout << "\nAvailable materials:\n";
     for (int i = 0; i < materials.size(); i++) {
         cout << i << " - " << materials[i].name << endl;
@@ -37,6 +37,7 @@ int main() {
     }
     Material selected = materials[matChoice];
 
+        // Link parameters
     double L, mp, amax;
     do
     {
