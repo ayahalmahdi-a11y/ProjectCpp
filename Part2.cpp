@@ -3,7 +3,7 @@
 #include <cmath>
 #include "Header.h"
 
-// Torque in mNm, Speed in RPM, Diameter/Width in mm, Mass in kg
+// Torque in Nm, Speed in RPM, Diameter/Width in mm, Mass in kg
 
 //Motors Array
 int motorCount = 5;
@@ -28,7 +28,7 @@ Gearbox gears[5] = {
 float calculateCost(Motor m, Gearbox g)
 {
     return m.mass + g.mass +
-        (m.diameter + g.diameter) / 1000.0f +  // mm -> m
+        (m.diameter + g.diameter) / 1000.0f +
         (m.width    + g.width)    / 1000.0f;
 }
 
@@ -42,11 +42,10 @@ void solvebestcombination(float T_required, float speed_required)
     for (int i = 0; i < motorCount; i++) {
         for (int j = 0; j < gearCount; j++) {
 
-            // Convert torque from mNm to Nm
-            float T_output     = (motors[i].torque / 1000.0f) * gears[j].ratio * gears[j].efficiency;
-            float speed_output = motors[i].speed / gears[j].ratio;
+            float T_output     = motors[i].torque * gears[j].ratio * gears[j].efficiency;
+            float speed_output = motors[i].speed  / gears[j].ratio;
 
-            // Check
+            // Check conditions
             if (T_output >= T_required && speed_output >= speed_required) {
 
                 float cost = calculateCost(motors[i], gears[j]);
@@ -68,22 +67,19 @@ void solvebestcombination(float T_required, float speed_required)
         cout << "\nBest Combination Found:\n";
 
         cout << "\nMotor:\n";
-        cout << "Torque: "   << motors[bestMotorIndex].torque   << " mNm\n";
-        cout << "Speed: "    << motors[bestMotorIndex].speed    << " RPM\n";
-        cout << "Mass: "     << motors[bestMotorIndex].mass     << " kg\n";
+        cout << "Torque: " << motors[bestMotorIndex].torque << " Nm\n";
+        cout << "Speed: "  << motors[bestMotorIndex].speed  << " RPM\n";
+        cout << "Mass: "   << motors[bestMotorIndex].mass   << " kg\n";
 
         cout << "\nGearbox:\n";
         cout << "Ratio: "      << gears[bestGearIndex].ratio               << "\n";
         cout << "Efficiency: " << gears[bestGearIndex].efficiency * 100.0f << " %\n";
 
-        // Recompute and display actual output values
-        float T_out     = (motors[bestMotorIndex].torque / 1000.0f)
-                        * gears[bestGearIndex].ratio
-                        * gears[bestGearIndex].efficiency;
-        float speed_out = motors[bestMotorIndex].speed / gears[bestGearIndex].ratio;
+        float T_out     = motors[bestMotorIndex].torque * gears[bestGearIndex].ratio * gears[bestGearIndex].efficiency;
+        float speed_out = motors[bestMotorIndex].speed  / gears[bestGearIndex].ratio;
 
-        cout << "\nOutput Torque: " << T_out     << " Nm (required: " << T_required     << " Nm)\n";
-        cout << "Output Speed: "   << speed_out << " RPM (required: " << speed_required << " RPM)\n";
+        cout << "\nOutput Torque: " << T_out << " Nm (required: " << T_required << " Nm)\n";
+        cout << "Output Speed: "   << speed_out << " RPM (required: " << speed_required  << " RPM)\n";
         cout << "\nTotal Cost: "   << bestCost  << "\n";
     }
 }
